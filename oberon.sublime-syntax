@@ -18,7 +18,7 @@ contexts:
     - match: \b({{control_keywords}})\b
       scope: keyword.control.oberon
     
-    - match: '\b([0-9A-F]+|[0-9A-F]+H)\b'
+    - match: '\b([0-9]+|[0-9A-F]+H)\b'
       scope: constant.numeric.oberon
     - match: '\b[0-9]+\.[0-9]+([E|D][-+]?[0-9]+)?\b'
       scope: constant.numeric.oberon
@@ -98,12 +98,33 @@ contexts:
         - match: \;
           pop: true
     
-    # ловим вот такого типа PROCEDURE (item:Item) ShowHuman;
-    # - match: '(PROCEDURE)\s\(.*\)\s+(\w+(\.\w+)?)'
+
+    # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
+    # - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)+\(.*\)+(\s*|)\:+(\s*|)+(\w+(\.\w+)?)'
     #   captures:
     #     1: keyword.control.oberon
     #     2: entity.name.function.oberon
-    - match: '(PROCEDURE)'
+    #     7: storage.type.function.oberon
+    - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)'
+      captures:
+        1: keyword.control.oberon
+        2: entity.name.function.oberon
+      push:
+        - match: \(
+          push:
+            - match: ':(\s*)(\w+(\.\w+)?)'
+              captures:
+                2: storage.type.function.oberon
+            - match: \)
+              pop: true
+        - match: ':(\s*)(\w+(\.\w+)?)'
+          captures:
+            2: storage.type.function.oberon
+        - match: \;
+          pop: true
+
+    # ловим вот такое PROCEDURE (item:Item) ShowHuman;
+    - match: '(PROCEDURE)(\s*|)'
       captures:
         1: keyword.control.oberon
       push:
@@ -114,35 +135,12 @@ contexts:
                 2: storage.type.function.oberon
             - match: \)
               pop: true
-        - match: '(\s*)(\w+(\.\w+)?)'
+        - match: '(\w+(\.\w+)?);'
           captures:
-            2: entity.name.function.oberon
-        - match: \;
+            1: entity.name.function.oberon
           pop: true
 
-    # # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
-    # # - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)+\(.*\)+(\s*|)\:+(\s*|)+(\w+(\.\w+)?)'
-    # #   captures:
-    # #     1: keyword.control.oberon
-    # #     2: entity.name.function.oberon
-    # #     7: storage.type.function.oberon
-    # - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)'
-    #   captures:
-    #     1: keyword.control.oberon
-    #     2: entity.name.function.oberon
-    #   push:
-    #     - match: \(
-    #       push:
-    #         - match: ':(\s*)(\w+(\.\w+)?)'
-    #           captures:
-    #             2: storage.type.function.oberon
-    #         - match: \)
-    #           pop: true
-    #     - match: ':(\s*)(\w+(\.\w+)?)'
-    #       captures:
-    #         2: storage.type.function.oberon
-    #     - match: \;
-    #       pop: true
+
 
     # наверное, типы item : Item
     - match: '(\w+(\.\w+)?)(\s*)\:(\s*)(\w+(\.\w+)?)'
@@ -257,7 +255,7 @@ contexts:
       pop: true
 
   binary-operators:
-    - match: '&|OR|~'
+    - match: '&| OR |~'
       scope: keyword.operator.logical.oberon
       push: after-operator
     - match: '=(?![=>])'
