@@ -1,0 +1,296 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Oberon
+file_extensions:
+  - Mod
+scope: source.oberon
+
+variables:
+  identifier: '\b[[:alpha:]_][[:alnum:]_]*\b'
+  basic_types: 'SHORTCHAR|BOOLEAN|CHAR|LONGINT|INTEGER|SHORTINT|REAL|SHORTREAL|LONGREAL|BYTE|SET|LONGSET|CARDINAL|LONGCARD|SHORTCARD|STRING|HUGEINT|ANYPTR|ANYREC'
+  control_keywords: 'SYSTEM|VAL|ADR|TYP|DISPOSE|FINALIZE|LIMITED|EXTENSIBLE|EMPTY|ABSTRACT|NEW|IN|ASSERT|HALT|EXIT|WITH|LOOP|ELSIF|DEFINITION|CLOSE|RETURN|OUT|ARRAY|BEGIN|BY|CASE|CONST|DIV|DO|ELSE|ELSEIF|FOR|IF|IMPORT|IS|MOD|OR|POINTER|RECORD|REPEAT|TO|TYPE|VAR|WHILE|THEN|UNTIL|FLT|LSL|PACK|ROR|UNPK'
+  functions: 'ABS|ASR|CHR|DEC|INC|LEN|ASH|CAP|ENTIER|LONG|MAX|MIN|ODD|ORD|SHORT|SIZE|COPY|EXCL|INCL|BITS|FLOOR'
+
+# test regexps via https://regex101.com/ mode зску
+contexts:
+  main:
+    - match: \b({{control_keywords}})\b
+      scope: keyword.control.oberon
+    
+    - match: '\b([0-9A-F]+|[0-9A-F]+H)\b'
+      scope: constant.numeric.oberon
+    - match: '\b[0-9]+\.[0-9]+([E|D][-+]?[0-9]+)?\b'
+      scope: constant.numeric.oberon
+    - match: '\b([0-9A-F]+X)\b'
+      scope: constant.numeric.oberon
+
+    # List = POINTER TO  ListItemRec;
+    - match: '(\w+(\.\w+)?)+\s+=\s+(POINTER TO)+\s+(\w+(\.\w+)?)'
+      scope: meta.type.oberon
+      captures:
+        1: storage.type.oberon
+        3: keyword.control.oberon
+        4: storage.type.oberon
+
+    # HumanRec = RECORD(ItemRec)
+    - match: '(\w+(\.\w+)?)+(\s*|)+=(\s*|)+(RECORD)+(\s*|)\(+(\w+(\.\w+)?)\)'
+      scope: meta.type.oberon
+      captures:
+        1: storage.type.oberon
+        5: keyword.control.oberon
+        7: storage.type.oberon
+
+    # HumanRec = RECORD
+    - match: '(\w+(\.\w+)?)+(\s*|)+=(\s*|)+(RECORD)'
+      scope: meta.type.oberon
+      captures:
+        1: storage.type.oberon
+        5: keyword.control.oberon
+
+    # Name = ARRAY 12 OF CHAR;
+    - match: '(\w+(\.\w+)?)+\s+=\s+(ARRAY)+\s(\w*)\s(OF)\s(\w+(\.\w+)?)'
+      scope: meta.type.oberon
+      captures:
+        1: storage.type.oberon
+        3: keyword.control.oberon
+        4: constant.numeric.oberon
+        5: keyword.control.oberon
+        6: storage.type.oberon
+
+    - match: \b({{basic_types}})\b
+      scope: storage.type.oberon
+      captures:
+        1: storage.type.function.oberon
+        2: entity.name.function.oberon
+
+    # раскрашиваем процедуры зелененьким
+    # ловим MODULE LambdaTest3;
+    - match: '(MODULE)\s+(\w+(\.\w+)?)\;'
+      captures:
+        1: keyword.control.oberon
+        2: entity.name.function.oberon
+    
+    # ловим END LambdaTest3.
+    - match: '(END)\s+(\w+(\.\w+)?)(\.|\;)'
+      captures:
+        1: keyword.control.oberon
+        2: entity.name.function.oberon
+    - match: 'END'
+      scope: keyword.control.oberon
+
+    # ловим вот такого типа lambda_it2it = PROCEDURE (item:Item):Item;
+    - match: '(\w+(\.\w+)?)(\s*|)=(\s*|)(PROCEDURE)'
+      captures:
+        1: storage.type.function.oberon
+        5: keyword.control.oberon
+      push:
+        - match: \(
+          push:
+            - match: ':(\s*)(\w+(\.\w+)?)'
+              captures:
+                2: storage.type.function.oberon
+            - match: \)
+              pop: true
+        - match: '(\s*)(\w+(\.\w+)?)'
+          captures:
+            2: storage.type.function.oberon
+        - match: \;
+          pop: true
+    
+    # ловим вот такого типа PROCEDURE (item:Item) ShowHuman;
+    # - match: '(PROCEDURE)\s\(.*\)\s+(\w+(\.\w+)?)'
+    #   captures:
+    #     1: keyword.control.oberon
+    #     2: entity.name.function.oberon
+    - match: '(PROCEDURE)'
+      captures:
+        1: keyword.control.oberon
+      push:
+        - match: \(
+          push:
+            - match: ':(\s*)(\w+(\.\w+)?)'
+              captures:
+                2: storage.type.function.oberon
+            - match: \)
+              pop: true
+        - match: '(\s*)(\w+(\.\w+)?)'
+          captures:
+            2: entity.name.function.oberon
+        - match: \;
+          pop: true
+
+    # # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
+    # # - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)+\(.*\)+(\s*|)\:+(\s*|)+(\w+(\.\w+)?)'
+    # #   captures:
+    # #     1: keyword.control.oberon
+    # #     2: entity.name.function.oberon
+    # #     7: storage.type.function.oberon
+    # - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)'
+    #   captures:
+    #     1: keyword.control.oberon
+    #     2: entity.name.function.oberon
+    #   push:
+    #     - match: \(
+    #       push:
+    #         - match: ':(\s*)(\w+(\.\w+)?)'
+    #           captures:
+    #             2: storage.type.function.oberon
+    #         - match: \)
+    #           pop: true
+    #     - match: ':(\s*)(\w+(\.\w+)?)'
+    #       captures:
+    #         2: storage.type.function.oberon
+    #     - match: \;
+    #       pop: true
+
+    # наверное, типы item : Item
+    - match: '(\w+(\.\w+)?)(\s*)\:(\s*)(\w+(\.\w+)?)'
+      captures:
+        5: storage.type.function.oberon
+
+
+    - match: \b({{functions}})\b
+      scope: meta.function.oberon
+      captures:
+        1: storage.type.function.oberon
+        2: entity.name.function.oberon
+
+    # comments      
+    - match: \(\*
+      scope: comment.oberon
+      push: comment1
+    - match: \*\)
+      scope: invalid.illegal.stray-bracket-end
+
+    # brackets
+    - match: \(
+      push: brackets
+    - match: \)
+      scope: invalid.illegal.stray-bracket-end
+    # strings
+    - match: '"'
+      scope: string.quoted.double.oberon
+      push: string1
+    - match: "'"
+      scope: string.quoted.double.oberon
+      push: string2
+
+    - include: constants
+    - include: binary-operators
+
+  # вложенные камменты. сделал до пятого уровня
+  comment1:
+    - meta_scope: comment.oberon
+    - match: \(\*
+      scope: comment.oberon
+      push: comment2
+    - match: \*\)
+      pop: true
+
+  comment2:
+    - meta_scope: comment.oberon
+    - match: \(\*
+      scope: comment.oberon
+      push: comment3
+    - match: \*\)
+      pop: true
+
+  comment3:
+    - meta_scope: comment.oberon
+    - match: \(\*
+      scope: comment.oberon
+      push: comment4
+    - match: \*\)
+      pop: true
+
+  comment4:
+    - meta_scope: comment.oberon
+    - match: \(\*
+      scope: comment.oberon
+      push: comment5
+    - match: \*\)
+      pop: true
+
+  comment5:
+    - meta_scope: comment.oberon
+    - match: \*\)
+      pop: true
+
+  brackets:
+    - match: \)
+      pop: true
+    - include: main
+
+  string1:
+    - meta_scope: string.quoted.double.oberon
+    - match: '"'
+      pop: true
+
+  string2:
+    - meta_scope: string.quoted.double.oberon
+    - match: "'"
+      pop: true
+
+  constants:
+    - match: \TRUE\b
+      scope: constant.language.boolean.true.oberon
+    - match: \bFALSE\b
+      scope: constant.language.boolean.false.oberon
+    - match: \bNIL\b
+      scope: constant.language.oberon
+    - match: \bINF\b
+      scope: constant.language.oberon
+
+  after-operator:
+    # Prevent matching "{" as a block, but instead always treat as an object
+    # literal. This is needed since in the "statements" context, a "{" starts
+    # an anonymous block, not an object literal.
+    - match: '(?=\{)'
+      push:
+        - include: object-literal
+        - match: '(?=.|\n)'
+          pop: true
+    # When following an operator, a single / is the beginning of a regexp,
+    # not a division operator
+    - match: '(?=[\S])'
+      pop: true
+
+  binary-operators:
+    - match: '&|OR|~'
+      scope: keyword.operator.logical.oberon
+      push: after-operator
+    - match: '=(?![=>])'
+      scope: keyword.operator.assignment.oberon
+      push: after-operator
+    - match: |-
+        (?x)
+        <<   | # bitwise-shift   left-to-right   both
+        >>     # bitwise-shift   left-to-right   both
+      scope: keyword.operator.bitwise.oberon
+      push: after-operator
+    # это вот если ты написал a:=b то результат будет :=
+    - match: |-
+        (?x)
+        <=   | # relational      left-to-right   both
+        >=   | # relational      left-to-right   both
+        <    | # relational      left-to-right   both
+        >      # relational      left-to-right   both
+      scope: keyword.operator.relational.oberon
+      push: after-operator
+    - match: |-
+        (?x)
+        =    | # equality        left-to-right   both
+        :=   | # equality        left-to-right   both
+        \#      # equality        left-to-right   both
+      scope: keyword.operator.comparison.oberon
+      push: after-operator
+    - match: |-
+        (?x)
+        /    | # division        left-to-right   both
+        \*   | # multiplication  left-to-right   both
+        \+   | # addition        left-to-right   both
+        -      # subtraction     left-to-right   both
+      scope: keyword.operator.arithmetic.oberon
+      push: after-operator
+
