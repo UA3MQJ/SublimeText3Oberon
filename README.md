@@ -10,6 +10,7 @@
   ```
   PROCEDURE -GetAlignment(VAR a: SHORTINT) "struct {char c; long long l;} _s; *a = (char*)&_s.l - (char*)&_s";
   ```
+ кроме - могут быть еще и +, \*, -
 
 - не правильные цвета ARRAY
 VAR

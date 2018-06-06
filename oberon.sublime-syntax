@@ -115,7 +115,7 @@ contexts:
     
 
     # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
-    - match: '\b(PROCEDURE)\b\s+(-|)(\w+(\.\w+)?)+(\s*|)'
+    - match: '\b(PROCEDURE)\b\s+([-+^*]|)(\w+(\.\w+)?)+(\s*|)'
       captures:
         1: keyword.control.oberon
         3: entity.name.function.oberon
