@@ -99,6 +99,7 @@ contexts:
         1: storage.type.function.oberon
         5: keyword.control.oberon
       push:
+        - include: comments
         - include: strings
         - match: \(
           push:
@@ -115,11 +116,12 @@ contexts:
     
 
     # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
-    - match: '\b(PROCEDURE)\b\s+([-+^*]|)(\w+(\.\w+)?)+(\s*|)'
+    - match: '\b(PROCEDURE)\b([-+^*]|\s+|)([-+^*]|)([-+^*]|\s+|)(\w+(\.\w+)?)+(\s*|)'
       captures:
         1: keyword.control.oberon
-        3: entity.name.function.oberon
+        5: entity.name.function.oberon
       push:
+        - include: comments
         - include: strings
         - match: \(
           push:
@@ -139,6 +141,7 @@ contexts:
       captures:
         1: keyword.control.oberon
       push:
+        - include: comments
         - include: strings
         - match: \(
           push:
