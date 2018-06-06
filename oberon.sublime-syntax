@@ -20,6 +20,7 @@ contexts:
 
   global:
     - include: comments
+    - include: strings
     - include: functions
     - include: module
     - include: import
@@ -33,7 +34,6 @@ contexts:
     - include: binary-operators
     - include: control_keywords
     - include: constants
-    - include: strings
     - include: brackets
     - include: catch_types
 
@@ -99,6 +99,7 @@ contexts:
         1: storage.type.function.oberon
         5: keyword.control.oberon
       push:
+        - include: strings
         - match: \(
           push:
             - match: ':(\s*)(\w+(\.\w+)?)'
@@ -114,11 +115,12 @@ contexts:
     
 
     # ловим вот такое PROCEDURE ShowHuman(item:Item):Item;
-    - match: '\b(PROCEDURE)\b\s+(\w+(\.\w+)?)+(\s*|)'
+    - match: '\b(PROCEDURE)\b\s+(-|)(\w+(\.\w+)?)+(\s*|)'
       captures:
         1: keyword.control.oberon
-        2: entity.name.function.oberon
+        3: entity.name.function.oberon
       push:
+        - include: strings
         - match: \(
           push:
             - match: ':(\s*)(\w+(\.\w+)?)'
@@ -137,6 +139,7 @@ contexts:
       captures:
         1: keyword.control.oberon
       push:
+        - include: strings
         - match: \(
           push:
             - match: ':(\s*)(\w+(\.\w+)?)'
@@ -147,6 +150,8 @@ contexts:
         - match: '(\w+(\.\w+)?);'
           captures:
             1: entity.name.function.oberon
+          pop: true
+        - match: \;
           pop: true
 
   catch_records:

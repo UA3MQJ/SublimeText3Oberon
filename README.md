@@ -6,6 +6,11 @@
 * Some completions
 
 ## Исправлено
+- Исправлено определение строки и раскраска на имени процедуры
+  ```
+  PROCEDURE -GetAlignment(VAR a: SHORTINT) "struct {char c; long long l;} _s; *a = (char*)&_s.l - (char*)&_s";
+  ```
+
 - не правильные цвета ARRAY
 VAR
   i: SHORTINT; udg: INTEGER; text2ch: ARRAY 2 OF CHAR;
