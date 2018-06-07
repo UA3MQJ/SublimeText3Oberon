@@ -1,4 +1,4 @@
-# Oberon support for Sublime Test 3
+# Oberon support for Sublime Text 3
 
 ## Features
 
