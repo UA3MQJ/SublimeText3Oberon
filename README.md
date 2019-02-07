@@ -1,4 +1,4 @@
-# Oberon support for Sublime Text 3
+# Oberon support for Sublime Test 3
 
 ## Features
 
@@ -6,6 +6,7 @@
 * Some completions
 
 ## Исправлено
+- Добавлена подсветка DIV0, MOD0
 - Добавлена подсветка цифр для КП типа 8000L
 - Исправлено определение строки и раскраска на имени процедуры
   ```
