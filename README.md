@@ -1,11 +1,25 @@
 # Oberon support for Sublime Test 3
 
+## Where files?
+
+Preferences -> Browse Packages
+
+In folder go to ./user
+
+```
+oberon.sublime-completions
+oberon.sublime-settings
+oberon.sublime-syntax
+oberon.yml
+```
+
 ## Features
 
 * Syntax support
 * Some completions
 
 ## Исправлено
+- подсветка issue #1
 - Добавлена подсветка DIV0, REM0
 - Добавлена подсветка цифр для КП типа 8000L
 - Исправлено определение строки и раскраска на имени процедуры
